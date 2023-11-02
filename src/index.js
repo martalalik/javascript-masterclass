@@ -4,32 +4,70 @@ import '../assets/css/style.css';
 // Functional Programming
 // --------------------------------------------------------------
 
-// Immutable vs Mutable Concepts
+// Immutable Data Structures
+
+const items = [
+  { id: '🍔', name: 'Super Burger', price: 399 },
+  { id: '🍟', name: 'Jumbo Fries', price: 199 },
+  { id: '🥤', name: 'Big Slurp', price: 299 },
+];
+console.log(items); // (3)[{…}, {…}, {…}]
+
+// [] - adding element
+const newItem = { id: '🌭', name: 'Posh Dog', price: 299 };
+
+// MUTABLE
+// items.push(newItem); // mutation is created on the data structure, by adding a new element to the array.
+// console.log(items); // [{…}, {…}, {…}, {…}] -> an original array is mutated
+
+// In Functional Programming, we want to keep everything immutable.
+// Instead using push(), we will construct a new array.
+// IMMUTABLE
+const newItems = [...items, newItem]; // creating a new array, by coping ...items and adding a newItem
+console.log(newItems); // (4)[{…}, {…}, {…}, {…}] - with a new element 🌭
+console.log(items); // (3)[{…}, {…}, {…}] - an original array is untouched
+
+// [] - removing element
+// MUTABLE
+// const removed = items.splice(0, 1);
+// console.log(removed); // {id: '🍔', name: 'Super Burger', price: 399}
+// console.log(items); // (2)[{…}, {…}] -> an original array is mutated
 
 // IMMUTABLE
-// - Means that, something CANNOT be modified after it is created.
-// - This promotes predictable state changes, and it makes those irritating hard to find bugs go away.
-// - Re-assigning is not immutability.
+const updatedItems = items.filter((item) => item.id !== '🍔') // filter() returns a new array, so it is immutable way
+console.log(updatedItems); // (2)[{…}, {…}] - a new array without 🍔 element
+console.log(items); // (3)[{…}, {…}, {…}] - an original array is untouched
 
-// let - CAN RE-ASSIGNING
-let a  = 'Super Burger';
-console.log(a); // Super Burger
-a = 'Big Slurp'; // this is RE-ASSIGNING a value of a string to a new string.
-console.log(a); // Big Slurp
+// {} - adding element
+const item = { id: '🌭', name: 'Posh Dog' };
 
-// const -> CANNOT RE-ASSIGNING something. When something is an object, we CAN RE-ASSIGNING; this also applies for nested objects.
-const b = a.slice(0, 1); // when we call slice() method on 'a', JS is spinning up a new string.
-console.log(a, b); // Big Slurp B
+// MUTABLE
+// item.price = 299; // mutating an object
+// console.log(item); // {id: '🌭', name: 'Posh Dog', price: 299} -> an original array is mutated
 
-const x = { id: '🍟', name: 'Jumbo Fries', price: 199 }; // by using const here to hold a value of the object, it means we cannot re-assign it.
-console.log(x); // {id: '🍟', name: 'Jumbo Fries', price: 199}
-// - using const doesn't guarantee that things will be immutable.
-x.id = '😎';
-console.log(x); // {id: '😎', name: 'Jumbo Fries', price: 199} -> here we mutated the constant.
+// IMMUTABLE
+const  newObjectItem = { ...item, price: 299 }; // creating a new object
+console.log(newObjectItem); // {id: '🌭', name: 'Posh Dog', price: 299}
+console.log(item); // {id: '🌭', name: 'Posh Dog'} -> an original array is untouched
 
-// To make an object immutable, JS introduced Object.freeze
-// - Object.freeze -> 100% a read only object. Works only on top lever, won't work for nested objects.
-const y = Object.freeze({ id: '🍟', name: 'Jumbo Fries', price: 199 });
-console.log(y); // {id: '🍟', name: 'Jumbo Fries', price: 199}
-// y.id = '😎';
-// console.log(y); // error -> Cannot assign to read only property 'id' of object '#<Object>'
+// {} - removing element
+// MUTABLE
+const itemToRemove = { id: '🌭', name: 'Posh Dog', price: 299 };
+// console.log(itemToRemove); // {id: '🌭', name: 'Posh Dog', price: 299}
+// delete itemToRemove.price;
+// console.log(itemToRemove); // {id: '🌭', name: 'Posh Dog'}
+
+// IMMUTABLE
+// destructuring method
+// const {price} = itemToRemove;
+// console.log(price); // 299
+const {price, ...leftOvers} = itemToRemove;
+console.log(price, leftOvers); // 299 {id: '🌭', name: 'Posh Dog'}
+
+// IDENTITY - means that no objects in JS are the same
+console.log(itemToRemove === itemToRemove); // true -> here we know nothing has changed, so the object is immutable
+console.log(itemToRemove === leftOvers); // false -> here we se we got a new array, and they are different. The original array didn't change.
+console.log({} === {}); // false
+console.log([] === []); // false
+
+// ... spread operator gives SHALLOW COPY!!!, which mean that any nested object will still be referenced.
