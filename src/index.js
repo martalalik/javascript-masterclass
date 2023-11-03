@@ -4,10 +4,15 @@ import '../assets/css/style.css';
 // Functional Programming
 // --------------------------------------------------------------
 
-// Lambda Expressions vs Anonymous Functions
+// Pure Functions and Referential Transparency
 
-// - In JS functions can be used as data, because they are also first-class citizens, which means that they can also DECLARED as a VALUE!!! Such as being ASSIGNED to a VARIABLE!!!
-// - EXPRESSION -> is assigned to a variable.
+// PURE FUNCTIONS
+// 1. (rule) REFERENTIAL TRANSPARENCY
+// - function ONLY DEPENDS on its INPUT!!! Given the same input, it will return the same output.
+// - function cannot depend on any mutable state or any state inside the function or reference, any state outside the function. Keeping things PURE.
+// 2. (rule) SIDE-EFFECT FREE
+// - side effects include console log, reassigning a variable, mutating an array form outside function, mutating an object, injecting things into the DOM. All this has a side effect.
+// - the side effect begin it has a knock-on effect, after that fashion is called something else happens because of that function call.
 
 const items = Object.freeze([
   { id: '🍔', name: 'Super Burger', price: 399 },
@@ -16,31 +21,26 @@ const items = Object.freeze([
 ]);
 console.log(items); // (3)[{…}, {…}, {…}]
 
-// NORMAL FUNCTION / FUNCTION DECLARATION
-function getItemName(item) {
-  return item.name
-}
-console.log(items.map(getItemName)); // ['Super Burger', 'Jumbo Fries', 'Big Slurp'] -> passing getItemName function in as a value!!!
+// IMPURE FUNCTION
+// - involves referencing variables and things elsewhere, and function becomes much more DIFFICULT to REUSE, to TEST!!!
+// const getTotalImpure = () => {
+//   // this is a side effect, running a console.log
+//   // by default this is an impure function, because items.reduce lives inside a console.log
+//   // console.log(items.reduce((x, y) => x + y.price, 0)); // 897 -> here we use LAMBDA EXPRESSION fat arrow function
+//
+//   // no console.log
+//   // making things more impure with document.query selectorSelector()
+//   document.querySelector('#app').innerHTML = items.reduce(
+//       (x, y) => x + y.price, 0);
+// }; // we are getting 897 printed in the DOM, the number war injected to the DOM, referencing variable of items. We are not passing it as an argument. Which makes function impure.
+// getTotalImpure();
 
-// LAMBDA EXPRESSIONS
-// - get bound to a variable
-// - we are passing the value of the function to be used as data elsewhere in the app. We are not calling getItemNameExp function directly, we are simply passing it as an argument into another function.
-// - Typically we will use lambda functions/expressions to compose more complex functions in functional programing paradigm.
-const getItemNameExp = (item) => item.name;
-console.log(items.map(getItemNameExp)); // ['Super Burger', 'Jumbo Fries', 'Big Slurp'] -> getItemNameExp function passed as an argument.
-
-// FUNCTION EXPRESSION -> by assigning getItemName function as a value.
-// const getItemNameExpression = function getItemName(item) {
-//   return item.name
-// }
-
-// FUNCTION CALLBACK -> directly called function
-// + ANONYMOUS FUNCTION ->
-// - function doesn't have a name,
-// cannot be accessed after it is created, we cannot reference this function variable anywhere.
-// console.log(items.map(function (item) {
-//   return item.name
-// }));
-
+// PURE FUNCTIONS
+// new feature in JS for an arrow function to see the passed argument.
+const getTotalPure = (v) => console.log(v) || v.reduce((x, y) => x + y.price, 0); // this is 100% pure and it is also a LAMBDA EXPRESSION
+// to make DOM manipulation is best to do it outside the function
+document.querySelector('#app').innerHTML = `<h1>${getTotalPure(items)}</h1>`; // 897 getting value printed in DOM.
+// because we're returning a reduced value here, we can use console.log.
+console.log(getTotalPure(items)); // 897
 
 
