@@ -7,6 +7,8 @@ import '../assets/css/style.css';
 // Pure Functions and Referential Transparency
 
 // PURE FUNCTIONS
+// - passing arguments instead referencing it!!!
+// - it can be used many times, and it will give the same output
 // 1. (rule) REFERENTIAL TRANSPARENCY
 // - function ONLY DEPENDS on its INPUT!!! Given the same input, it will return the same output.
 // - function cannot depend on any mutable state or any state inside the function or reference, any state outside the function. Keeping things PURE.
@@ -36,7 +38,7 @@ console.log(items); // (3)[{…}, {…}, {…}]
 // getTotalImpure();
 
 // PURE FUNCTIONS
-// new feature in JS for an arrow function to see the passed argument.
+// console.log(v) || -> new feature in JS for an arrow function to see the passed argument.
 const getTotalPure = (v) => console.log(v) || v.reduce((x, y) => x + y.price, 0); // this is 100% pure and it is also a LAMBDA EXPRESSION
 // to make DOM manipulation is best to do it outside the function
 document.querySelector('#app').innerHTML = `<h1>${getTotalPure(items)}</h1>`; // 897 getting value printed in DOM.
