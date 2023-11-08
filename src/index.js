@@ -4,75 +4,91 @@ import '../assets/css/style.css';
 // Functional Programming
 // --------------------------------------------------------------
 
-// Currying and Partial Application
+// Function Composition and Currying
+// compose from RIGHT to LEFT
 
-const items = Object.freeze([
-  { id: '🍔', name: 'Super Burger', price: 399 },
-  { id: '🍟', name: 'Jumbo Fries', price: 199 },
-  { id: '🥤', name: 'Big Slurp', price: 299 },
-]);
-console.log(items); // (3)[{…}, {…}, {…}]
-
-// CURRING
-// const curry = () => {};
-// - Wrapping f() in curry() function.
-// curry(f(a, b, c));
-// - curry() is a HOF(higher order function) which allows to transform f() so that there is no need to call it as 'a,b,c'. This argument can be called one by one:
-// f(a)(b)(c)
-// - Is an advanced technic.
-// - It doesn't call a function, it TRANSFORMS it when we carry something.
-// - It would allow to call f() and pass the first argument 'a'.
-// - f() would then returns as a new function; that we could apply the next argument too. That is why we learn about closure.
-// - As a typical function we call it at once, and we pass in a few arguments; where in functional programming is CURRING a function, like so f(a)(b)(c), and it would transform it into the ability to be able to call it sequentially one after the other. This is CARRYING!!!
-// - Even though we're transforming from f(a, b, c) to f(a)(b)(c), we can still call it the original way, so currying allows taking an existing function, we can curry it, and then we can call it in the normal way.
-
-// - curry() function, something similar will be found in lib like RAMDA or LODASH
 const curry = (fn) => {
   return (...args) => {
-    // adjusting for getNameFromId('🍟', items); to be able to call function normal way
     if(args.length >= fn.length) {
-      console.log(args.length, fn.length); // 2 2 -> this will show only on getNameFromId('🍟', items), because we have two arguments passed in as one.
-      // instead of returning fn.bind(); because we're calling the function normally, is to execute it.
-      return fn.apply(null, args); // with apply() expects an array apply(context, [a, b,c])
+      return fn.apply(null, args);
     }
-    return fn.bind(null, ...args); // it is important that fn.bind() expects: bind(context -> which is specified as 'null', list of arguments -> this means that, we have to comma(,) separate all of our function arguments like so: a,b,c)(context, a, b, c), which is why we are taking args array and then spreading it into comma(,) to separate them.
+    return fn.bind(null, ...args);
   }
 };
-// - the main difference between apply() & bind()
-// - bind() -> will return a new function, which will have the context and the args BOUND to it.
-// - apply() -> will execute the function like so: fn(args). But by using apply(), we are EXPLICIT SETTING value of the function to 'null'.
 
-// 1. Transform from (id) => (items) to (id, items)
-// 2. Wrap it in curry()
-const getNameFromId = curry(
-    (id, items) => items.find((item) => item.id === id).name
-); // now we have CURRIED FUNCTION. This allows us to compose and write function in "normal function style", so now we have just an id and items; things are more readable.
-// - Using curry() transforms the function for us.
+//  FUNCTION COMPOSITION
+// - We use function composition to BUILD a CHAIN of EVENTS. Performing each operation in stages. map() or join() aren't going to call until split() has finished, 1split(), 2map(), 3join(), functions will execute in this order.
 
-// - After transforming normal function to a currying function, we can call for id and items separately like so...
-// const getFries = getNameFromId('🍟');
-// const getBurger = getNameFromId('🍔');
+// - we want to turn slugify to SLUG -> 'ultimate-courses'. Typically, we would slugify some text to turn into, perhaps a URL.
+// - join( separator?: string ): string -> joining each element in an array, with whatever we pass in.
+// const slugify = 'Ultimate Courses'
+//     .split(' ')
+//     .map((x) => x.toLowerCase())
+//     .join('-'); // this is a more functional programming approach here. However, these are just things that are built into JS. They don't allow us to expand and use lots of different functions to accomplish different tasks.
+// console.log(slugify); // ultimate-courses
 
-// - ...or together
-// 1. First adjusting curry()
-// - calling 'items' here we are EXECUTING getNameFromId() IMMEDIATELY!!!
-const getFries = getNameFromId('🍟', items);
-const getBurger = getNameFromId('🍔')(items); // so the first function call is going to return a new function, which when we then call it is set up to receive the ...args from the first function, so it then passes them into (id, items) and calls them both at the same time. getNameFromId() function isn't executing this (id, items) => items.find((item) => item.id === id).name piece of code entirely. It's executing curry() function, which is almost catching function in the closure. And then, when the closure returns, and we call it again, it's then taking that initial function (fn) =>, and it's binding it for us with argument items.
-// - FUNCTION EXECUTION
-// - There is a massive difference in how they execute (a,b) or (a)(b)
-// - Both achieve exactly the same thing.
-// - getNameFromId('🍟', items) -> this is called in the normal style.
-// - getNameFromId('🍔')(items) -> the second function call has been curried, and we are then sequentially passing in those function arguments, and it might be that we have more arguments like so: getNameFromId('🍔')(items)()()(), and our curry() will continue as is. Of course, for each argument we would need another argument to be accepted in getNameFromId() function as well.
+// - Instead of using the build inn split(), map() and join(), it's typically that we use functional programming libs such as RAMDA, or LODASH.
+// - Creating my own function, for this we need curry(), because we gonna curry each function, so that we can partly apply it in a series of events.
+// - Creating a split function with a 'separator', which is then going to return a new function, which gives a 'string', which that 'string' can be called with the split() and then we pass 'separator'.
+// - We're not doing a true partial application because we haven't curried the function.
+// const split = (separator) => (string) => string.split(separator); // LAMBDA EXPRESSION -> nice arrow function, oneliner. It's also using a CLOSURE, because we have to call it twice.
+// console.log(split(' ')('Ultimate Courses')); // ['Ultimate', 'Courses']
 
-// - The idea of curring allows us to call the function in the normal way, so we need to adjust curry() for getFries.
-// - So, we know that by calling the function normally it's going to execute the first block with if, because the args.length is in fact >= to the fn.length.
-console.log(getFries); // shows getNameFromId body -> calling the RESULTS of a function when we don't use ().
-// after refactoring curry() console will print 'Jumbo Fries'.
-console.log(getBurger); // Super Burger -> calling the RESULTS of a function when we don't use ().
+// - Creating utility functions to demonstrate composition and currying
+// - Curring will allow us to add partial application behavior.
+// - Now we have a fully curried function, that is nice and easy to read
+const split = curry((separator, string) => string.split(separator));
+const join = curry((separator, string) => string.join(separator));
+const map = curry((fn, array) => array.map(fn)); // apply a transformation to every single element inside the array.
 
-// PARTIAL APPLICATION
-// - first we had 'items' called on getFries(items) function, so we were using getNameFromId(), which is acting as HOF -> const getFries = getNameFromId('🍟'); // like so. This we call PARTIALLY APPLYING parts of curry(). We do not call this immediately.
-const getSlurp = getNameFromId('🥤'); // partially applying
-console.log(getSlurp(items)); // Big Slurp -> calling for items later
+// This would be typically behavior while developing applications; creating variables, and then we can pass them into other functions.
+// - But this is not the best approach, because we need to understand what those all functions do.
+const splitText = split(' ')('Ultimate Courses');
+const mappedText = map((x) =>  x.toLowerCase())(splitText);
+const joinedText = join('-')(mappedText);
+console.log(joinedText); // ultimate-courses
 
+// Makes things as a pure JS
+const joinedText2 = join('-')(
+    map((x) => x.toLowerCase())(
+        split(' ')('Ultimate Courses')));
+console.log(joinedText2); // ultimate-courses
 
+// Making toLowercase function
+const toLowerCase = (x) => x.toLowerCase();
+const joinedText3 = join('-')(map(toLowerCase)(split(' ')('Ultimate Courses'))); // this is not very readable. We are limited here because we hardcoded a string 'Ultimate Courses'.
+console.log(joinedText3); // ultimate-courses
+
+// Better reusability
+// - We moved the data outside the function.
+// - slugify is a small program made up of few functions that we composed together, is now passing each result into the next function. And this is how can think about our functional programming.
+const slugify2 = (str) => join('-')(map(toLowerCase)(split(' ')(str)));
+console.log(slugify2('Ultimate Courses')); // ultimate-courses
+
+// - Composing simpler slugify.
+// - We will pass all functions, step by step, for the path to follow.
+// - But we have to do it BACKWARDS
+// - What happens here: we have created compose() function.
+// - This is a better way to compose functions.
+// - compose functions run from RIGHT to LEFT!!!
+// - creating compose function:
+const compose = (...fns) => (x) => console.log(x) || fns.reduceRight((value, fn) => fn(value), x);
+// - console.log(x) -> Ultimate JavaScript
+// - 'x' -> INITIAL VALUE
+// - initial value is important because it will be passed to 'value'
+// - fn(value) -> this will run everytime there is a new function in slugify -> join, map, split
+// - and because we're PARTIALLY applying these upfront, they all get called SEQUENTIALLY IN ORDER at the right times, using our function closures.
+const slugify3 = compose(
+    join('-'),
+    map(toLowerCase),
+    split(' ') //partial applying!!! Nothing happens here before slugify won't be called. Returning composer, a function
+);
+console.log(slugify3('Ultimate JavaScript')); // ultimate-javascript -> by calling slugify3 we kick off all functions inside composer
+
+// We can do also like this, to return only a result, without calling a function and passing argument. But this won't be reusable!
+const slugify4 = compose(
+    join('-'),
+    map(toLowerCase),
+    split(' ')
+)('Ultimate JavaScript');
+console.log(slugify4); // ultimate-javascript
