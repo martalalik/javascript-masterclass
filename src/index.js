@@ -4,38 +4,41 @@ import '../assets/css/style.css';
 // Functional Programming
 // --------------------------------------------------------------
 
-// Function Pipes and Currying
+// Recursion
+// - It is far better and faster at calculating different problems, and gives a slightly cleaner solution than using a loop.
 
-// COMPOSE FUNCTION
-// - compose from RIGHT to LEFT
+// RECURSIVE FUNCTION
+// - a function that can CALL ITSELF.
+// - is typically USED for ITERATING over an operation using a function that repeatedly calls itself into, until it gives a final result, it's kind of a loop that can be replaced with RECURSIVE FUNCTION.
+// - is typically USED when we need to CALL THE SAME FUNCTION REPEATEDLY, and we want to PASS DIFFERENT PARAMETERS into the function each time. This could be iterating down branches or a data structure for SORTING DATA STRUCTURES, or some kind of MATH OPERATIONS.
+// - are PURE FUNCTIONS.
 
-// PIPE FUNCTION
-// - compose from LEFT to RIGHT
-// - this technic is chosen over composing
+// FACTORIAL (silnia !)
+// - calculating the FACTORIAL of a number:
+// 3 x 2 x 1 = 6 = (3!)
 
-// PIPE function
-const pipe = (...fns) => (x) => fns.reduce((v, f) => f(v), x);
+// Imperative programming
+// const factorial = (n) => {
+//   let result = 1;
+//   for(let count = n; count > 1; count--) {
+//     result = result * count;
+//   }
+//   return result;
+// }
 
-// CURRY function
-const curry = (fn) => {
-  return (...args) => {
-    if(args.length >= fn.length) {
-      return fn.apply(null, args);
-    }
-    return fn.bind(null, ...args);
+// Functional programming
+// - Nice thing about recursion is that we don't have to maintain any kind og state.
+// - We are using a pure function.
+// - n - 1 -> just using simple expression
+const factorial = (n) => {
+  console.log(n);
+  if( n > 1 ) {
+    return n * factorial(n - 1) // calling function inside itself
   }
-};
+  return 1; // covers: let result = 1;
+}
+console.log(factorial(3)); // 6
 
-//
-const split = curry((separator, string) => string.split(separator));
-const join = curry((separator, string) => string.join(separator));
-const map = curry((fn, array) => array.map(fn));
-
-const toLowerCase = (x) => x.toLowerCase();
-
-// RXJS -> it is REACTIVE FUNCTIONAL PROGRAMMING -> reactive extension for JS. There is a build in pipe function in RXJS, which behaves in pretty much the exact same way; we can import pure functions form RXJS and perform the same logical operations on them.
-
-// SLUG function
-const slugify = pipe(split(' '), map(toLowerCase), join('-'));
-
-console.log(slugify('Ultimate Courses')); // ultimate-courses
+// Lambda Expression
+const factorial1 = (n) => (n > 1 ? n * factorial1(n - 1) : 1);
+console.log(factorial1(5)); // 6
